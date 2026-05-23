@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Jincana - Jugar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>Jincana</h1>
+      <p>Sigue las pistas y encuentra las localizaciones</p>
+    </header>
+
+    <nav class="nav-tabs">
+      <a href="index.html" class="nav-tab active">Jugar</a>
+      <a href="admin.html" class="nav-tab">Crear</a>
+    </nav>
+
+    <!-- Pantalla de importación -->
+    <div class="import-screen" id="import-screen">
+      <div class="import-icon">📂</div>
+      <div class="import-title">Importa tu jincana</div>
+      <div class="import-subtitle">Carga el archivo <code>.jincana</code> que has creado para comenzar la aventura</div>
+
+      <div class="file-drop-zone" id="file-drop-zone">
+        <div class="file-drop-zone-text">
+          <strong>Haz clic aquí</strong> o arrastra el archivo<br>
+          <span style="font-size: 0.8rem; opacity: 0.7;">Soporta archivos .jincana y .json</span>
+        </div>
+      </div>
+      <input type="file" id="file-input" accept=".jincana,.json" style="display: none;">
+
+      <div style="margin-top: 1.5rem;">
+        <button class="btn btn-ghost btn-sm" onclick="loadDemo()">Cargar jincana de ejemplo</button>
+      </div>
+    </div>
+
+    <!-- Pantalla de juego -->
+    <div class="game-screen" id="game-screen">
+      <div class="game-header">
+        <div class="game-title" id="game-title">Jincana</div>
+        <div class="game-progress" id="game-progress">0 / 0</div>
+      </div>
+
+      <!-- Pista -->
+      <div class="clue-card">
+        <div class="clue-label">Pista actual</div>
+        <div class="clue-text" id="clue-text">Carga una jincana para comenzar</div>
+      </div>
+
+      <!-- Mapa -->
+      <div class="map-container" id="game-map"></div>
+
+      <!-- Estado GPS -->
+      <div class="gps-status-card" id="gps-card">
+        <div class="gps-indicator" id="gps-indicator"></div>
+        <div class="gps-info">
+          <div class="gps-label" id="gps-label">Esperando ubicación...</div>
+          <div class="gps-value" id="gps-value">Activa la ubicación de tu dispositivo</div>
+        </div>
+        <button class="btn btn-sm btn-outline hidden" id="btn-resume-gps" onclick="resumeGeolocation()">Activar</button>
+      </div>
+
+      <!-- Distancia -->
+      <div class="distance-card">
+        <div class="distance-label">Distancia al objetivo</div>
+        <div style="margin-top: 0.5rem;">
+          <span class="distance-value" id="distance-value">—</span>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="game-actions">
+        <button class="btn btn-success btn-lg btn-block" id="btn-arrived" onclick="confirmArrived()">
+          <span>He llegado</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="resetProgress()">
+          <span>Reiniciar progreso</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Pantalla de victoria -->
+    <div class="victory-screen" id="victory-screen">
+      <div class="victory-icon">🏆</div>
+      <div class="victory-title">¡Jincana completada!</div>
+      <div class="victory-text">Has encontrado todas las localizaciones. ¡Enhorabuena!</div>
+      <button class="btn btn-primary btn-lg" onclick="resetProgress()">Jugar de nuevo</button>
+    </div>
+  </div>
+
+  <!-- Modal compartido -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-title" id="modal-title">Título</div>
+      <div class="modal-text" id="modal-text">Texto del modal</div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="modal-btn-confirm">Confirmar</button>
+        <button class="btn btn-ghost" id="modal-btn-cancel">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/maps.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

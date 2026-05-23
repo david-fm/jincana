@@ -1,0 +1,30 @@
+{
+  "version": "1.0",
+  "nombre": "Jincana de Ejemplo",
+  "localizaciones": [
+    {
+      "id": "demo-1",
+      "pista": "Busca la fuente más antigua de la plaza principal. Allí encontrarás la siguiente pista oculta.",
+      "lat": 40.416775,
+      "lng": -3.70379,
+      "radio_metros": 20,
+      "orden": 1
+    },
+    {
+      "id": "demo-2",
+      "pista": "Sube las escaleras del edificio con la fachada azul. La respuesta está en la segunda planta.",
+      "lat": 40.418,
+      "lng": -3.705,
+      "radio_metros": 20,
+      "orden": 2
+    },
+    {
+      "id": "demo-3",
+      "pista": "El final está donde empieza todo: en la puerta de entrada del parque central.",
+      "lat": 40.415,
+      "lng": -3.702,
+      "radio_metros": 20,
+      "orden": 3
+    }
+  ]
+}
