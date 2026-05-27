@@ -105,6 +105,9 @@ function validateJincanaData(data) {
     if (typeof loc.lat !== 'number' || typeof loc.lng !== 'number') {
       return { valid: false, error: 'Todas las localizaciones deben tener coordenadas válidas.' };
     }
+    if (loc.password !== undefined && typeof loc.password !== 'string') {
+      return { valid: false, error: 'La contraseña de una localización debe ser un texto.' };
+    }
   }
   return { valid: true };
 }
@@ -113,7 +116,7 @@ function validateJincanaData(data) {
  * Genera un hash simple para identificar una jincana.
  */
 function hashJincana(data) {
-  const str = JSON.stringify(data.localizaciones.map(l => `${l.lat},${l.lng},${l.pista}`));
+  const str = JSON.stringify(data.localizaciones.map(l => `${l.lat},${l.lng},${l.pista},${l.password || ''}`));
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);

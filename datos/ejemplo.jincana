@@ -13,6 +13,7 @@
     {
       "id": "demo-2",
       "pista": "Sube las escaleras del edificio con la fachada azul. La respuesta está en la segunda planta.",
+      "password": "azul123",
       "lat": 40.418,
       "lng": -3.705,
       "radio_metros": 20,

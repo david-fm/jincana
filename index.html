@@ -53,6 +53,15 @@
       <div class="clue-card">
         <div class="clue-label">Pista actual</div>
         <div class="clue-text" id="clue-text">Carga una jincana para comenzar</div>
+        <div class="clue-password-prompt hidden" id="clue-password-prompt">
+          <div class="clue-lock-icon">🔒</div>
+          <div class="clue-password-label">Esta pista está protegida</div>
+          <div class="clue-password-input-row">
+            <input type="password" class="clue-password-input" id="clue-password-input" placeholder="Introduce la contraseña">
+            <button class="btn btn-sm btn-clue-unlock" id="btn-unlock" onclick="attemptUnlock()">Desbloquear</button>
+          </div>
+          <div class="clue-password-error hidden" id="clue-password-error">Contraseña incorrecta</div>
+        </div>
       </div>
 
       <!-- Mapa -->

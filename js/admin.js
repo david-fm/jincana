@@ -83,6 +83,7 @@ function showTempMarker(lat, lng) {
 
 function saveLocation() {
   const pista = document.getElementById('loc-pista').value.trim();
+  const password = document.getElementById('loc-password').value.trim();
   const coords = getFormCoords();
   const radio = parseInt(document.getElementById('loc-radio').value) || 20;
 
@@ -102,6 +103,7 @@ function saveLocation() {
       locations[idx] = {
         ...locations[idx],
         pista,
+        password: password || undefined,
         lat: coords.lat,
         lng: coords.lng,
         radio_metros: radio,
@@ -113,14 +115,18 @@ function saveLocation() {
     document.getElementById('btn-cancel').classList.add('hidden');
   } else {
     // Crear nueva
-    locations.push({
+    const newLoc = {
       id: generateId(),
       pista,
       lat: coords.lat,
       lng: coords.lng,
       radio_metros: radio,
       orden: locations.length + 1,
-    });
+    };
+    if (password) {
+      newLoc.password = password;
+    }
+    locations.push(newLoc);
     showToast('Localización añadida.', 'success');
   }
 
@@ -136,6 +142,7 @@ function editLocation(id) {
   editingId = id;
   document.getElementById('loc-id').value = id;
   document.getElementById('loc-pista').value = loc.pista;
+  document.getElementById('loc-password').value = loc.password || '';
   document.getElementById('loc-lat').value = loc.lat.toFixed(6);
   document.getElementById('loc-lng').value = loc.lng.toFixed(6);
   document.getElementById('loc-radio').value = loc.radio_metros;
@@ -170,6 +177,7 @@ function cancelEdit() {
 function resetForm() {
   document.getElementById('loc-id').value = '';
   document.getElementById('loc-pista').value = '';
+  document.getElementById('loc-password').value = '';
   document.getElementById('loc-lat').value = '';
   document.getElementById('loc-lng').value = '';
   document.getElementById('loc-radio').value = '20';
@@ -209,7 +217,7 @@ function renderLocationsList() {
       <div class="location-number">${index + 1}</div>
       <div class="location-content">
         <div class="location-pista" title="${escapeHtml(loc.pista)}">${escapeHtml(loc.pista)}</div>
-        <div class="location-meta">${loc.lat.toFixed(5)}, ${loc.lng.toFixed(5)} · Radio: ${loc.radio_metros}m</div>
+        <div class="location-meta">${loc.lat.toFixed(5)}, ${loc.lng.toFixed(5)} · Radio: ${loc.radio_metros}m${loc.password ? ' · 🔒' : ''}</div>
       </div>
       <div class="location-actions">
         <button class="btn btn-ghost" title="Editar" onclick="editLocation('${loc.id}')">✏️</button>
@@ -341,14 +349,20 @@ function exportJincana() {
   const data = {
     version: '1.0',
     nombre: 'Mi Jincana',
-    localizaciones: sortLocations(locations).map((l) => ({
-      id: l.id,
-      pista: l.pista,
-      lat: l.lat,
-      lng: l.lng,
-      radio_metros: l.radio_metros,
-      orden: l.orden,
-    })),
+    localizaciones: sortLocations(locations).map((l) => {
+      const exported = {
+        id: l.id,
+        pista: l.pista,
+        lat: l.lat,
+        lng: l.lng,
+        radio_metros: l.radio_metros,
+        orden: l.orden,
+      };
+      if (l.password) {
+        exported.password = l.password;
+      }
+      return exported;
+    }),
   };
 
   const filename = `jincana_${new Date().toISOString().slice(0, 10)}`;

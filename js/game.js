@@ -13,6 +13,7 @@ let targetMarker = null;
 let targetCircle = null;
 let isVictory = false;
 let isTransitioning = false;
+let unlockedPasswords = {};
 
 /* ============================================
    Inicialización y carga de progreso guardado
@@ -22,10 +23,19 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFileDrop();
   initGameMap();
 
-  // Verificar si hay un progreso guardado
   const saved = loadProgress();
   if (saved && saved.jincanaData) {
     tryRestoreProgress(saved);
+  }
+
+  const passwordInput = document.getElementById('clue-password-input');
+  if (passwordInput) {
+    passwordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        attemptUnlock();
+      }
+    });
   }
 });
 
@@ -39,6 +49,7 @@ function tryRestoreProgress(saved) {
   jincanaHash = saved.jincanaHash || hashJincana(jincanaData);
   currentIndex = saved.currentIndex || 0;
   isVictory = saved.isVictory || false;
+  unlockedPasswords = saved.unlockedPasswords || {};
 
   if (isVictory) {
     showVictory();
@@ -122,6 +133,7 @@ function loadDemo() {
       {
         id: 'demo-2',
         pista: 'Sube las escaleras del edificio con la fachada azul. La respuesta está en la segunda planta.',
+        password: 'azul123',
         lat: 40.418,
         lng: -3.705,
         radio_metros: 20,
@@ -176,7 +188,30 @@ function renderCurrentClue() {
   const sorted = sortLocations(jincanaData.localizaciones);
   if (currentIndex < 0 || currentIndex >= sorted.length) return;
   const loc = sorted[currentIndex];
-  document.getElementById('clue-text').textContent = loc.pista;
+  const clueText = document.getElementById('clue-text');
+  const passwordPrompt = document.getElementById('clue-password-prompt');
+  const passwordInput = document.getElementById('clue-password-input');
+  const passwordError = document.getElementById('clue-password-error');
+
+  passwordError.classList.add('hidden');
+  passwordInput.value = '';
+
+  if (loc.password) {
+    const locKey = loc.id || `${currentIndex}`;
+    if (unlockedPasswords[locKey]) {
+      clueText.textContent = loc.pista;
+      clueText.classList.remove('hidden');
+      passwordPrompt.classList.add('hidden');
+    } else {
+      clueText.classList.add('hidden');
+      passwordPrompt.classList.remove('hidden');
+      passwordInput.focus();
+    }
+  } else {
+    clueText.textContent = loc.pista;
+    clueText.classList.remove('hidden');
+    passwordPrompt.classList.add('hidden');
+  }
 }
 
 /* ============================================
@@ -380,7 +415,7 @@ function triggerArrival() {
 
   const sorted = sortLocations(jincanaData.localizaciones);
 
-  // Confeti!
+  // Confetti!
   launchConfetti();
 
   currentIndex++;
@@ -392,6 +427,13 @@ function triggerArrival() {
     isTransitioning = false;
     showVictory();
     return;
+  }
+
+  // Reset password unlock state for the new clue
+  const nextLoc = sorted[currentIndex];
+  const locKey = nextLoc.id || `${currentIndex}`;
+  if (nextLoc.password && !unlockedPasswords[locKey]) {
+    // Need to unlock again
   }
 
   // Actualizar UI con siguiente pista
@@ -449,6 +491,7 @@ async function resetProgress() {
   isVictory = false;
   jincanaData = null;
   jincanaHash = null;
+  unlockedPasswords = {};
   stopGeolocation();
 
   document.getElementById('import-screen').classList.remove('hidden');
@@ -472,6 +515,36 @@ async function resetProgress() {
 }
 
 /* ============================================
+   Contraseña de pistas
+   ============================================ */
+
+function attemptUnlock() {
+  if (!jincanaData) return;
+  const sorted = sortLocations(jincanaData.localizaciones);
+  if (currentIndex < 0 || currentIndex >= sorted.length) return;
+  const loc = sorted[currentIndex];
+  if (!loc.password) return;
+
+  const input = document.getElementById('clue-password-input');
+  const error = document.getElementById('clue-password-error');
+  const entered = input.value;
+
+  if (entered === loc.password) {
+    const locKey = loc.id || `${currentIndex}`;
+    unlockedPasswords[locKey] = true;
+    error.classList.add('hidden');
+    renderCurrentClue();
+    showToast('¡Pista desbloqueada!', 'success');
+  } else {
+    error.classList.remove('hidden');
+    input.value = '';
+    input.focus();
+  }
+}
+
+// Allow Enter key to submit password
+
+/* ============================================
    Persistencia
    ============================================ */
 
@@ -482,6 +555,7 @@ function saveGameState() {
     jincanaHash,
     currentIndex,
     isVictory,
+    unlockedPasswords,
     updatedAt: Date.now(),
   });
 }
