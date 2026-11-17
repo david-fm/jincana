@@ -95,18 +95,7 @@ async function processFile(file) {
   try {
     const text = await readFileAsText(file);
     const data = JSON.parse(text);
-    const validation = validateJincanaData(data);
-    if (!validation.valid) {
-      showToast(validation.error, 'error');
-      return;
-    }
-    jincanaData = data;
-    jincanaHash = hashJincana(data);
-    currentIndex = 0;
-    isVictory = false;
-    saveGameState();
-    startGame(true);
-    showToast(`Jincana "${data.nombre}" cargada. ¡Buena suerte!`, 'success');
+    startJincana(data, `Jincana "${data.nombre}" cargada. ¡Buena suerte!`);
   } catch (err) {
     showToast('No se pudo leer el archivo. Asegúrate de que sea un .jincana válido.', 'error');
     console.error(err);
@@ -118,43 +107,62 @@ async function processFile(file) {
    ============================================ */
 
 function loadDemo() {
-  jincanaData = {
-    version: '1.0',
-    nombre: 'Jincana de Ejemplo',
-    localizaciones: [
-      {
-        id: 'demo-1',
-        pista: 'Busca la fuente más antigua de la plaza principal. Allí encontrarás la siguiente pista oculta.',
-        lat: 40.4168,
-        lng: -3.7038,
-        radio_metros: 20,
-        orden: 1,
-      },
-      {
-        id: 'demo-2',
-        pista: 'Sube las escaleras del edificio con la fachada azul. La respuesta está en la segunda planta.',
-        password: 'azul123',
-        lat: 40.418,
-        lng: -3.705,
-        radio_metros: 20,
-        orden: 2,
-      },
-      {
-        id: 'demo-3',
-        pista: 'El final está donde empieza todo: en la puerta de entrada del parque central.',
-        lat: 40.415,
-        lng: -3.702,
-        radio_metros: 20,
-        orden: 3,
-      },
-    ],
-  };
-  jincanaHash = hashJincana(jincanaData);
+  // La demo se carga desde datos/ejemplo.jincana (mismo contenido que la copia
+  // embebida abaixo). Si el archivo no está disponible se usa la copia local.
+  fetch('datos/ejemplo.jincana')
+    .then((res) => (res.ok ? res.json() : Promise.reject(new Error('no disponible'))))
+    .then((data) => startJincana(data, 'Jincana de ejemplo cargada.'))
+    .catch(() => startJincana(DEMO_JINCANA, 'Jincana de ejemplo cargada.'));
+}
+
+/** Demo embebida: copia de datos/ejemplo.jincana para trabajar sin servidor. */
+const DEMO_JINCANA = {
+  version: '1.0',
+  nombre: 'Jincana de Ejemplo',
+  localizaciones: [
+    {
+      id: 'demo-1',
+      pista: 'Busca la fuente más antigua de la plaza principal. Allí encontrarás la siguiente pista oculta.',
+      lat: 40.4168,
+      lng: -3.7038,
+      radio_metros: 20,
+      orden: 1,
+    },
+    {
+      id: 'demo-2',
+      pista: 'Sube las escaleras del edificio con la fachada azul. La respuesta está en la segunda planta.',
+      password: 'azul123',
+      lat: 40.418,
+      lng: -3.705,
+      radio_metros: 20,
+      orden: 2,
+    },
+    {
+      id: 'demo-3',
+      pista: 'El final está donde empieza todo: en la puerta de entrada del parque central.',
+      lat: 40.415,
+      lng: -3.702,
+      radio_metros: 20,
+      orden: 3,
+    },
+  ],
+};
+
+/** Carga una jincana válida y arranca la partida. */
+function startJincana(data, mensaje) {
+  const validation = validateJincanaData(data);
+  if (!validation.valid) {
+    showToast(validation.error, 'error');
+    return;
+  }
+  jincanaData = data;
+  jincanaHash = hashJincana(data);
   currentIndex = 0;
   isVictory = false;
+  unlockedPasswords = {};
   saveGameState();
   startGame(true);
-  showToast('Jincana de ejemplo cargada.', 'success');
+  showToast(mensaje, 'success');
 }
 
 /* ============================================
@@ -169,6 +177,15 @@ function startGame(requestGeolocation = true) {
   updateGameHeader();
   renderCurrentClue();
   renderMap();
+
+  // El mapa se inicializó con el contenedor oculto (display:none), por lo que
+  // Leaflet guardó un tamaño 0x0. Hay que recalcularlo al mostrar la pantalla,
+  // ANTES de arrancar la geolocalización: un flyTo sobre un mapa 0x0 deja el
+  // estado interno con NaN y rompe la animación de forma permanente.
+  if (gameMap) {
+    gameMap.invalidateSize();
+    requestAnimationFrame(() => gameMap.invalidateSize());
+  }
 
   if (requestGeolocation) {
     startGeolocation();
