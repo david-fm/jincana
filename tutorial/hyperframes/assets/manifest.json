@@ -1,0 +1,29 @@
+{
+  "generado_por": "tutorial/record-tutorial.mjs",
+  "base_url": "http://localhost:8765",
+  "viewport": "1280x720",
+  "salida": "1920x1080",
+  "fps": 30,
+  "capitulos": [
+    {
+      "name": "01-inicio",
+      "file": "assets/01-inicio.mp4",
+      "duration": 5.566667
+    },
+    {
+      "name": "02-crear",
+      "file": "assets/02-crear.mp4",
+      "duration": 34.366667
+    },
+    {
+      "name": "03-exportar",
+      "file": "assets/03-exportar.mp4",
+      "duration": 7.466016
+    },
+    {
+      "name": "04-jugar",
+      "file": "assets/04-jugar.mp4",
+      "duration": 12.566667
+    }
+  ]
+}

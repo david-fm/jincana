@@ -1,0 +1,9 @@
+# Estado interno de HyperFrames (se regenera solo)
+tutorial/hyperframes/.hyperframes/
+
+# Grabaciones brutas de Playwright (el script las borra tras convertirlas)
+tutorial/hyperframes/assets/_raw_*/
+tutorial/hyperframes/assets/*.webm
+
+# Sistema
+.DS_Store
