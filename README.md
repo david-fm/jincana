@@ -8,11 +8,14 @@ La app es estática y funciona en cualquier navegador: **crea** una jincana
 marcando puntos en el mapa, **expórtala** a un archivo `.jincana` y compártelo.
 Quien lo recibe lo **carga** y juega.
 
-![Tutorial de Jincana: crear una jincana de 3 puntos, exportarla y jugarla](tutorial/jincana-tutorial.mp4)
+![Tutorial de Jincana: crear una jincana de 3 puntos, exportarla y jugarla](tutorial/jincana-tutorial.gif)
 
 *71 s · 1920×1080 · 30 fps* — el recorrido completo: marcar los puntos en el
 mapa, **descargar** el `.jincana` y **cargarlo** hasta dejarlo listo para jugar.
-[⬇ Descargar el MP4 (31 MB)](tutorial/jincana-tutorial.mp4)
+
+> ▶ El clip de arriba se reproduce solo (GitHub no incrusta MP4 en el README,
+> así que es un GIF de 8 MB). El vídeo original en MP4 y 1080p está aquí:
+> [`tutorial/jincana-tutorial.mp4`](tutorial/jincana-tutorial.mp4) (30 MB).
 
 ---
 
@@ -144,6 +147,7 @@ La validación la hace `validateJincanaData()` en `js/utils.js`: exige
 │                         # el botón «Cargar jincana de ejemplo»
 └── tutorial/
     ├── jincana-tutorial.mp4   # Tutorial final (1920×1080, 71 s)
+    ├── jincana-tutorial.gif   # Previsualización para el README (560 px, 12 fps)
     ├── record-tutorial.mjs    # Grabación con Playwright de los 4 capítulos
     ├── build-composition.mjs  # Inyecta los tiempos reales en la composición
     ├── design.md              # Tokens de diseño del vídeo
@@ -162,7 +166,12 @@ El vídeo embebido arriba (`tutorial/jincana-tutorial.mp4`, 1920×1080, 30 fps,
 H.264, 71 s) recorre el caso completo: **crear** una jincana de 3 puntos,
 **descargar** el `.jincana` y **cargarlo** hasta dejarla lista para jugar.
 
-El vídeo se produce en tres pasos, todos reproducibles:
+GitHub no reproduce MP4 dentro del README: el elemento `<video>` lo elimina
+el sanitizador y la sintaxis de imagen con un `.mp4` produce una imagen rota.
+Por eso la previsualización es `tutorial/jincana-tutorial.gif` (560 px, 12 fps,
+8 MB), que sí se anima solo; el MP4 se enlaza aparte.
+
+El vídeo se produce en cuatro pasos, todos reproducibles:
 
 ```bash
 # 1) Grabar los capítulos con Playwright (necesita la app servida en :8765)
@@ -175,6 +184,14 @@ node tutorial/build-composition.mjs
 # 3) Montar y renderizar el vídeo con HyperFrames
 cd tutorial/hyperframes
 npx hyperframes render --fps 30 --quality looks -o ../jincana-tutorial.mp4
+cd ../..
+
+# 4) Regenerar el GIF de previsualización del README
+ffmpeg -i tutorial/jincana-tutorial.mp4 \
+  -vf "fps=12,scale=560:-2:flags=lanczos,split[a][b];\
+[a]palettegen=max_colors=128:stats_mode=diff[p];\
+[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle" \
+  -loop 0 tutorial/jincana-tutorial.gif
 ```
 
 Detalles del proceso:
