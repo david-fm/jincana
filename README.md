@@ -8,8 +8,11 @@ La app es estática y funciona en cualquier navegador: **crea** una jincana
 marcando puntos en el mapa, **expórtala** a un archivo `.jincana` y compártelo.
 Quien lo recibe lo **carga** y juega.
 
-▶ **Tutorial en vídeo (71 s, 1920×1080):** [`tutorial/jincana-tutorial.mp4`](tutorial/jincana-tutorial.mp4)
-— crea una jincana de 3 puntos, la descarga y la deja lista para jugar.
+![Tutorial de Jincana: crear una jincana de 3 puntos, exportarla y jugarla](tutorial/jincana-tutorial.mp4)
+
+*71 s · 1920×1080 · 30 fps* — el recorrido completo: marcar los puntos en el
+mapa, **descargar** el `.jincana` y **cargarlo** hasta dejarlo listo para jugar.
+[⬇ Descargar el MP4 (31 MB)](tutorial/jincana-tutorial.mp4)
 
 ---
 
@@ -155,9 +158,9 @@ La validación la hace `validateJincanaData()` en `js/utils.js`: exige
 
 ## El tutorial en vídeo
 
-`tutorial/jincana-tutorial.mp4` (1920×1080, 30 fps, H.264, 71 s) recorre el caso
-completo: **crear** una jincana de 3 puntos, **descargar** el `.jincana` y
-**cargarlo** hasta dejarla lista para jugar.
+El vídeo embebido arriba (`tutorial/jincana-tutorial.mp4`, 1920×1080, 30 fps,
+H.264, 71 s) recorre el caso completo: **crear** una jincana de 3 puntos,
+**descargar** el `.jincana` y **cargarlo** hasta dejarla lista para jugar.
 
 El vídeo se produce en tres pasos, todos reproducibles:
 
